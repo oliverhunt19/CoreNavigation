@@ -725,9 +725,9 @@ public struct LatLngBounds : ICloneable
     /// <param name="centre"></param>
     /// <param name="dist"></param>
     /// <returns></returns>
-    public static LatLngBounds GetBoundingBox(LatLng centre, double dist)
+    public static LatLngBounds GetBoundingBox(LatLng centre, Length dist)
     {
-        double correctedDistance = dist * Math.Sqrt(2);
+        double correctedDistance = dist.As(UnitsNet.Units.LengthUnit.Kilometer) * Math.Sqrt(2);
         return new LatLngBounds(
             LatLng.RhumbDestinationPoint(centre, 225, correctedDistance), 
             LatLng.RhumbDestinationPoint(centre, 45, correctedDistance));
@@ -738,15 +738,17 @@ public struct LatLngBounds : ICloneable
     public IReadOnlyList<T> GetAllInBox<T>(IEnumerable<T> values)
             where T : ILocation
     {
+        Func<ILocation, bool> Contained = ContainedInLatitude;
+
         List<T> Results = new List<T>();
-        foreach(T value in values)
+        Parallel.ForEach(values, x =>
         {
-            if(ContainedInBox(value))
+            if (Contained(x))
             {
-                Results.Add(value);
+                Results.Add(x);
 
             }
-        }
+        });
         return Results;
     }
 

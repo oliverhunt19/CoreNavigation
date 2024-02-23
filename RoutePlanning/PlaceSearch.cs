@@ -15,7 +15,7 @@ namespace RoutePlanning
         public PlacesAroundPoint<T> GetAroundPoint(LatLng centre, Length length)
             
         {
-            LatLngBounds boxBounds = LatLngBounds.GetBoundingBox(centre, length.Kilometers);
+            LatLngBounds boxBounds = LatLngBounds.GetBoundingBox(centre, length);
             IReadOnlyList<T> allInBox = boxBounds.GetAllInBox(AllPlaces);
             return new PlacesAroundPoint<T>(allInBox, centre);
         }
