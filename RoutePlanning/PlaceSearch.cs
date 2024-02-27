@@ -32,11 +32,11 @@ namespace RoutePlanning
             IReadOnlyList<T> allInBox = largestBox.GetAllInBox(values);
 
             List<T> result = new List<T>();
-            foreach(LatLngBounds latLng in latLngBounds)
+            Parallel.ForEach(latLngBounds, x =>
             {
-                IReadOnlyList<T> AllInBox = latLng.GetAllInBox(allInBox);
+                IReadOnlyList<T> AllInBox = x.GetAllInBox(allInBox);
                 result.AddRange(AllInBox);
-            }
+            });
             return result;
         }
     }

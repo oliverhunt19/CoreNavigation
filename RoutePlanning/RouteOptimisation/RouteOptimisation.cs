@@ -44,7 +44,7 @@ namespace RoutePlanning.RouteOptimisation
                 throw new ArgumentNullException("OptimisationTrials", "There are no trial routes to check the tests on");
             }
             IEnumerable<Task<RouteOptimisationTrialResult>> testTasks = optimisationTrials.Select(x => OptimisationTest.GetCost(x));
-            List<RouteOptimisationTrialResult> routeOptimisationResults = (await Task.WhenAll(testTasks)).ToList();
+            List<RouteOptimisationTrialResult> routeOptimisationResults = (await Task.WhenAll(testTasks).ConfigureAwait(false)).ToList();
 
             List<RouteOptimisationTrialResult> routeOptimisationResultsOrdered = routeOptimisationResults.OrderByDescending(x => x.Cost).Reverse().ToList();
 
