@@ -2,10 +2,15 @@
 
 namespace RoutePlanning
 {
-    public interface ILocation
+    public interface ILocation : ICoordinate
     {
-        LatLng Coordinates { get; }
+        
 
         Address GetAddress();
+    }
+
+    public interface ICoordinate
+    {
+        LatLng Coordinates { get; }
     }
 }

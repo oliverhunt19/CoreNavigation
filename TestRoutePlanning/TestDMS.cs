@@ -27,6 +27,14 @@ namespace TestRoutePlanning
         }
 
         [TestMethod]
+        public void TestNegDMStoDD()
+        {
+            DMS dMS = new DMS(-53, 19, 14);
+            DD dD = dMS.ToDD();
+            dD.DecimalDegrees.Should().BeApproximately(-53.32055555555556, 1e-9);
+        }
+
+        [TestMethod]
         public void Constructor_ValidInput_InitializesCorrectly()
         {
             // Arrange

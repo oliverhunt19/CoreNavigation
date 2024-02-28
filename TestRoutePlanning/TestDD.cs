@@ -34,6 +34,21 @@ namespace TestRoutePlanning
         }
 
         [TestMethod]
+        public void ToNegDMS_ConversionIsCorrect()
+        {
+            // Arrange
+            DD dd = new DD(-45.504305555555556);
+
+            // Act
+            DMS dms = dd.ToDMS();
+
+            // Assert
+            Assert.AreEqual(-45, dms.Degrees);
+            Assert.AreEqual(30, dms.Minutes);
+            Assert.AreEqual(15.5, dms.Seconds, 0.000001);
+        }
+
+        [TestMethod]
         public void ToRad_ConversionIsCorrect()
         {
             // Arrange
@@ -43,7 +58,7 @@ namespace TestRoutePlanning
             double radians = dd.ToRad();
 
             // Assert
-            Assert.AreEqual(0.793036688, radians, 0.000001);
+            Assert.AreEqual(0.79419995577602175985, radians, 0.000001);
         }
 
         [TestMethod]

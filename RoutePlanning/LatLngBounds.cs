@@ -88,9 +88,9 @@ namespace RoutePlanning
 
 
         public IReadOnlyList<T> GetAllInBox<T>(IEnumerable<T> values)
-                where T : ILocation
+                where T : ICoordinate
         {
-            Func<ILocation, bool> Contained = ContainedInBox;
+            Func<ICoordinate, bool> Contained = ContainedInBox;
 
             List<T> Results = new List<T>();
             Parallel.ForEach(values, x =>
@@ -104,12 +104,12 @@ namespace RoutePlanning
             return Results;
         }
 
-        private bool ContainedInLatitude(ILocation location)
+        private bool ContainedInLatitude(ICoordinate location)
         {
             double lat = location.Coordinates.Lat;
             return lat <= NorthEast.Lat && lat >= SouthWest.Lat;
         }
-        private bool ContainedInLongitude(ILocation location)
+        private bool ContainedInLongitude(ICoordinate location)
         {
             double lng = location.Coordinates.Lng;
             return lng <= NorthEast.Lng && lng >= SouthWest.Lng;
@@ -120,7 +120,7 @@ namespace RoutePlanning
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public bool ContainedInBox(ILocation location)
+        public bool ContainedInBox(ICoordinate location)
         {
             if (!ContainedInLatitude(location)) return false;
             if (!ContainedInLongitude(location)) return false;

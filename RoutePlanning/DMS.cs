@@ -26,8 +26,9 @@
 
         public DD ToDD()
         {
+            int sign = Math.Sign(Degrees);
             double DM = Minutes + Seconds / 60;
-            double DD = Degrees + DM / 60;
+            double DD = Degrees + sign * DM / 60;
             return new DD(DD);
         }
     }
