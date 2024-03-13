@@ -1,10 +1,5 @@
 ﻿using GoogleApi.Entities.Common;
 using GoogleApi.Entities.Maps.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnitsNet;
 
 namespace RoutePlanning
@@ -146,4 +141,89 @@ namespace RoutePlanning
         }
     }
 
+    public class EquirectangularProjection
+    {
+        private const double Radius = 6371;
+        private readonly double cosLat;
+
+        public readonly LatLng LatLngCentre;
+
+        public EquirectangularProjection(LatLng latLng)
+        {
+            LatLngCentre = latLng;
+            cosLat = Math.Cos(latLng.Lat.ToRad());
+        }
+
+        public EquirectangularCoordinate GetEquirectangularCoordinate(LatLng latLng)
+        {
+            return new EquirectangularCoordinate(Radius * (latLng.Lng.ToRad()-LatLngCentre.Lng.ToRad()) * cosLat,Radius*(latLng.Lat.ToRad()-LatLngCentre.Lat.ToRad()));
+        }
+    }
+
+    public struct EquirectangularCoordinate
+    {
+        public readonly double X;
+
+        public readonly double Y;
+
+        public EquirectangularCoordinate(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
+
+    public class PlaneProjection
+    {
+        public readonly DD LatLngCentre;
+
+        public PlaneProjection(DD latLngCentre)
+        {
+            LatLngCentre = latLngCentre;
+        }
+
+        public PlaneCoordinate GetPlaneCoordinate(LatLng latLng)
+        {
+            double cCy = Math.Cos(LatLngCentre.ToRad());
+            double sCy = Math.Sin(LatLngCentre.ToRad());
+            //double cCx = Math.Cos(LatLngCentre.Lng.ToRad());
+            //double sCx = Math.Sin(LatLngCentre.Lng.ToRad());
+
+
+            double cPy = Math.Cos(latLng.Lat.ToRad());
+            double sPy = Math.Sin(latLng.Lat.ToRad());
+            double cPx = Math.Cos(latLng.Lng.ToRad());
+            double sPx = Math.Sin(latLng.Lng.ToRad());
+
+            //double x0 = cCx*cPy*cPx-sCx*cPy*sPx;
+            //double y0 = sCx*cPy*sPx+cCx*cPy*sPx;
+            //double z0 = sPy;
+
+
+            //double x1 = cCy*x0+sCy*sPy;
+            //double x2 = sCx*cPy*sPx+cCx*cPy*sPx;
+            //double x3 = -sCy*x0+cCy*sPy;
+
+            double x1 = cCy*cPy*cPx+sCy*sPy;
+            double x2 = cPy*sPx;
+            double x3 = -sCy*cPy*cPx+sPy*cCy;
+
+            double y = Math.Asin(x3);
+            double x = Math.Atan2(x2,x1);
+            return new PlaneCoordinate(x.ToDeg(), y.ToDeg());
+        }
+    }
+
+    public struct PlaneCoordinate
+    {
+        public readonly double X;
+
+        public readonly double Y;
+
+        public PlaneCoordinate(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+    }
 }
