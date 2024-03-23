@@ -1,7 +1,5 @@
 ﻿using GoogleApi;
-using GoogleApi.Entities.Maps.Common;
 using GoogleApi.Entities.Maps.Directions.Response;
-using UnitsNet;
 
 namespace RoutePlanning.RouteOptimisation
 {
@@ -20,20 +18,21 @@ namespace RoutePlanning.RouteOptimisation
         }
 
 
-        public async Task<RouteOptimisationResult> RunOptimisation(RouteOptimisationRequest<T> optimisationRequest)
+        public async Task<RouteOptimisationResult> RunOptimisation(RouteOptimisationRequest<T> optimisationRequest, CancellationToken cancellationToken = default)
         {
+            
             List<Task<RouteOptimisationTrial>> trials = new List<Task<RouteOptimisationTrial>>();
             foreach (T ilocation in optimisationRequest.Route.Places)
             {
                 trials.Add(RouteOptimisationTrial.RunTrial(optimisationRequest, ilocation));
             }
 
-            optimisationTrials = (await Task.WhenAll(trials).ConfigureAwait(false)).ToList();
+            optimisationTrials = (await Task.WhenAll(trials).WaitAsync(cancellationToken).ConfigureAwait(false)).ToList();
 
             return await RunTest();
         }
 
-        public async Task<RouteOptimisationResult> RunTest(RouteOptimisationTest? test = null)
+        public async Task<RouteOptimisationResult> RunTest(RouteOptimisationTest? test = null, CancellationToken cancellationToken = default)
         {
             if (test != null)
             {
@@ -44,7 +43,7 @@ namespace RoutePlanning.RouteOptimisation
                 throw new ArgumentNullException("OptimisationTrials", "There are no trial routes to check the tests on");
             }
             IEnumerable<Task<RouteOptimisationTrialResult>> testTasks = optimisationTrials.Select(x => OptimisationTest.GetCost(x));
-            List<RouteOptimisationTrialResult> routeOptimisationResults = (await Task.WhenAll(testTasks).ConfigureAwait(false)).ToList();
+            List<RouteOptimisationTrialResult> routeOptimisationResults = (await Task.WhenAll(testTasks).WaitAsync(cancellationToken).ConfigureAwait(false)).ToList();
 
             List<RouteOptimisationTrialResult> routeOptimisationResultsOrdered = routeOptimisationResults.OrderByDescending(x => x.Cost).Reverse().ToList();
 
